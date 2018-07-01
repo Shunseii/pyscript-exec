@@ -112,7 +112,7 @@ public class PyScriptExec {
                 case "Save":
                     cmd = new String[] {
                             "C:/Python27/ArcGIS10.4/python.exe",
-                            "Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/myscript.py"
+                            "Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/myscript.py",
                             /*this.absPath, file.getParent(), 
                             ((JButton)e.getSource()).getText()*/
                         };
