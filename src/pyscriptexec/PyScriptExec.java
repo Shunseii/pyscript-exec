@@ -17,6 +17,7 @@ import javax.swing.filechooser.*;
  */
 public class PyScriptExec {
     
+    public static String absPath;
     public static JMenuItem[] fileMenuItems;
     public static JLabel label;
     public static File file;
@@ -87,9 +88,6 @@ public class PyScriptExec {
     
     public static class FileMenuAction implements ActionListener {
         
-        String absPath, savePath, fileName;
-        String[] cmd = new String[2];
-        
         @Override
         public void actionPerformed(ActionEvent e) {
             FileNameExtensionFilter filter = new FileNameExtensionFilter(".tsv, .txt", "tsv", "txt");
@@ -110,11 +108,11 @@ public class PyScriptExec {
                     break;
             // Program saving file with specified name
                 case "Save":
-                    cmd = new String[] {
+                    
+                    String[] cmd = new String[] {
                             "C:/Python27/ArcGIS10.4/python.exe",
-                            "Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/myscript.py",
-                            /*this.absPath, file.getParent(), 
-                            ((JButton)e.getSource()).getText()*/
+                            "Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/FIJIExcel.py", 
+                            absPath, name.getText(), file.getParent() 
                         };
                     try {
                         Runtime.getRuntime().exec(cmd);
