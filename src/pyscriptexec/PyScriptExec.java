@@ -18,19 +18,19 @@ import javax.swing.filechooser.*;
 public class PyScriptExec {
     
     public static JMenuItem[] fileMenuItems;
-    public static JLabel label;
-    public static File file;
+    public static JLabel label, pythonLoad;
+    public static File file, pyFile;
     public static JFrame frame;
     public static JPanel panel;
     public static JTextField name;
     public static JButton saveButton;
-    public static JFileChooser chooser;
+    public static JFileChooser pyChooser, chooser;
     public static final int GUI_WIDTH = 320;
     public static final int GUI_HEIGHT = 150;
     
     public static void main(String[] args) {
         panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        label = new JLabel("Please load a file from the File menu.");
+        label = new JLabel("Please select your Python installation directory.");
         frame = new JFrame("PyScriptExec");
         
         createMenu(frame);
@@ -39,6 +39,7 @@ public class PyScriptExec {
         panel.add(saveButton);
         
         name.setEnabled(false);
+        fileMenuItems[1].setEnabled(false);
         saveButton.setEnabled(false);
         saveButton.setActionCommand("Save");
         saveButton.addActionListener(new FileMenuAction());
@@ -57,12 +58,14 @@ public class PyScriptExec {
         JMenu fileMenu = new JMenu("File");
         saveButton = new JButton("Save As");
         name = new JTextField("File Name", 15);
-        fileMenuItems = new JMenuItem[2];
+        fileMenuItems = new JMenuItem[3];
         chooser = new JFileChooser(System.getProperty("user.home") + "/Desktop");
+        pyChooser = new JFileChooser();
         
         //Create JMenuItems for File menu
-        fileMenuItems[0] = new JMenuItem("Open");
-        fileMenuItems[1] = new JMenuItem("Exit");
+        fileMenuItems[0] = new JMenuItem("Python Directory");
+        fileMenuItems[1] = new JMenuItem("Choose File");
+        fileMenuItems[2] = new JMenuItem("Exit");
         
         
         //Add menu compoenents to JMenuBar and to JMenus
@@ -75,7 +78,7 @@ public class PyScriptExec {
             fileMenuItems[i].setAccelerator(KeyStroke.getKeyStroke(letter, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             fileMenu.add(fileMenuItems[i]);
 
-            if (i == 0) {
+            if (i == fileMenuItems.length - 1) {
                 fileMenu.addSeparator();
             }
 
@@ -87,39 +90,59 @@ public class PyScriptExec {
     
     public static class FileMenuAction implements ActionListener {
         
-        static String absPath;
+        static String absPath, pythonDir;
         
         @Override
         public void actionPerformed(ActionEvent e) {
             FileNameExtensionFilter filter = new FileNameExtensionFilter(".tsv, .txt", "tsv", "txt");
+            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe", "exe");
             chooser.setAcceptAllFileFilterUsed(false);
             chooser.setFileFilter(filter);
+            pyChooser.setAcceptAllFileFilterUsed(false);
+            pyChooser.setFileFilter(pyFilter);
             
             switch (e.getActionCommand()) {
-            // Program selecting a file and run Python script on the selected file
-                case "Open":
+            // Program selects the specified file
+                case "Choose File":
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                         file = chooser.getSelectedFile();
                         absPath = file.getAbsolutePath();
-                        
                         label.setText("Please choose a name to save the file as.");
                         saveButton.setEnabled(true);
                         name.setEnabled(true);
                     }
                     break;
-            // Program saving file with specified name
+            // Program calls Python script
                 case "Save":
-                    String[] cmd = new String[] {
-                            "C:/Python27/ArcGIS10.4/python.exe",
-                            "Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/FIJIExcel.py", 
-                            absPath, name.getText(), file.getParent() 
-                        };
+                    String scriptAddr = "C:/Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/FIJIExcel.py";
+                    
                     try {
-                        Runtime.getRuntime().exec(cmd);
+                        ProcessBuilder pb = new ProcessBuilder(
+                                /*"C:/Python/python.exe"*/ pythonDir, 
+                                scriptAddr, absPath, 
+                                name.getText(), file.getParent());
+                        Process p = pb.start();
+                        
+                        /* 
+                        BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+                        System.out.println("Output: " + in.readLine());
+                        System.out.println("Errors: " + er.readLine());
+                        */
+                        
                         label.setText("Python script successfully run!");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         label.setText("Error loading Python script.");
+                    }
+                    break;
+                case "Python Directory":
+                    if (pyChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                        pyFile = pyChooser.getSelectedFile();
+                        pythonDir = pyFile.getAbsolutePath();
+                        label.setText("Please load a file from the File menu.");
+                        fileMenuItems[1].setEnabled(true);
                     }
                     break;
                 default:
