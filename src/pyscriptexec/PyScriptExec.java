@@ -8,6 +8,8 @@ package pyscriptexec;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
+import java.nio.file.Paths;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
@@ -114,23 +116,22 @@ public class PyScriptExec {
                     break;
             // Program calls Python script
                 case "Save":
-                    String scriptAddr = "C:/Users/SK-po/Desktop/Sufyan Khan/Programming/Java/Projects/PyScriptExec/scripts/FIJIExcel.py";
-                    
                     try {
+                        URL resource = PyScriptExec.class.getResource("../scripts/FIJIExcel.py");
+                        File scriptFile =  Paths.get(resource.toURI()).toFile();
+                        String scriptAddr = scriptFile.getAbsolutePath();
+                        
                         ProcessBuilder pb = new ProcessBuilder(
-                                /*"C:/Python/python.exe"*/ pythonDir, 
-                                scriptAddr, absPath, 
+                                pythonDir, scriptAddr, absPath, 
                                 name.getText(), file.getParent());
                         Process p = pb.start();
-                        
-                        /* 
+                        /*
                         BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
                         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
                         System.out.println("Output: " + in.readLine());
                         System.out.println("Errors: " + er.readLine());
                         */
-                        
                         label.setText("Python script successfully run!");
                     } catch (Exception ex) {
                         ex.printStackTrace();

@@ -75,12 +75,10 @@ if __name__ == '__main__':
     parser.add_argument('numbersheets', nargs='?', type=str2bool, const=True, default='False',
                         help='specify if you want separate sheets per experiment or not')
     args = parser.parse_args()
-    print "HEllo"
-#    master = read_tsv(args.tsvfile)
-#
-#    if args.numbersheets:
-#        print('1')
-#        write_xl1(master, args.outputname, args.outputdir)
-#    else:
-#        print('2')
-#        write_xl2(master, args.outputname, args.outputdir)
+    master = read_tsv(args.tsvfile)
+    if args.numbersheets:
+        print('1')
+        write_xl1(master, args.outputname, args.outputdir)
+    else:
+        print('2')
+        write_xl2(master, args.outputname, args.outputdir)
