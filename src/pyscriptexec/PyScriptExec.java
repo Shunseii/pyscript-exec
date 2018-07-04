@@ -5,10 +5,15 @@
  */
 package pyscriptexec;
 
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.*;
 import javax.swing.filechooser.*;
@@ -18,7 +23,7 @@ import javax.swing.filechooser.*;
  * @author SK-po
  */
 public class PyScriptExec {
-    
+
     public static JMenuItem[] fileMenuItems;
     public static JLabel label, pythonLoad;
     public static File file, pyFile;
@@ -29,23 +34,23 @@ public class PyScriptExec {
     public static JFileChooser pyChooser, chooser;
     public static final int GUI_WIDTH = 320;
     public static final int GUI_HEIGHT = 150;
-    
+
     public static void main(String[] args) {
         panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         label = new JLabel("Please select your Python installation directory.");
         frame = new JFrame("PyScriptExec");
-        
+
         createMenu(frame);
         panel.add(label);
         panel.add(name);
         panel.add(saveButton);
-        
+
         name.setEnabled(false);
         fileMenuItems[1].setEnabled(false);
         saveButton.setEnabled(false);
         saveButton.setActionCommand("Save");
         saveButton.addActionListener(new FileMenuAction());
-        
+
         frame.add(panel);
         frame.setVisible(true);
         frame.setResizable(false);
@@ -53,7 +58,7 @@ public class PyScriptExec {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
     }
-    
+
     public static void createMenu(JFrame frame) {
         //Create JMenuBar and JMenuBar components
         JMenuBar menuBar = new JMenuBar();
@@ -63,18 +68,17 @@ public class PyScriptExec {
         fileMenuItems = new JMenuItem[3];
         chooser = new JFileChooser(System.getProperty("user.home") + "/Desktop");
         pyChooser = new JFileChooser();
-        
+
         //Create JMenuItems for File menu
         fileMenuItems[0] = new JMenuItem("Python Directory");
         fileMenuItems[1] = new JMenuItem("Choose File");
         fileMenuItems[2] = new JMenuItem("Exit");
-        
-        
+
         //Add menu compoenents to JMenuBar and to JMenus
         menuBar.add(fileMenu);
-        
+
         char letter;
-        
+
         for (int i = 0; i < fileMenuItems.length; i++) {
             letter = fileMenuItems[i].getText().charAt(0);
             fileMenuItems[i].setAccelerator(KeyStroke.getKeyStroke(letter, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -86,25 +90,26 @@ public class PyScriptExec {
 
             fileMenuItems[i].addActionListener(new FileMenuAction());
         }
-        
+
         frame.setJMenuBar(menuBar);
     }
-    
+
     public static class FileMenuAction implements ActionListener {
-        
-        static String absPath, pythonDir;
-        
+
+        static String absPath;
+        static String pythonDir /*= "path/to/python.exe or python.app"*/;
+
         @Override
         public void actionPerformed(ActionEvent e) {
             FileNameExtensionFilter filter = new FileNameExtensionFilter(".tsv, .txt", "tsv", "txt");
-            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe", "exe");
+            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe, .app", "exe", "app");
             chooser.setAcceptAllFileFilterUsed(false);
             chooser.setFileFilter(filter);
             pyChooser.setAcceptAllFileFilterUsed(false);
             pyChooser.setFileFilter(pyFilter);
-            
+
             switch (e.getActionCommand()) {
-            // Program selects the specified file
+                // Selects the specified file
                 case "Choose File":
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                         file = chooser.getSelectedFile();
@@ -114,15 +119,39 @@ public class PyScriptExec {
                         name.setEnabled(true);
                     }
                     break;
-            // Program calls Python script
+                // Loads and executes the Python script
                 case "Save":
                     try {
-                        URL resource = PyScriptExec.class.getResource("../scripts/FIJIExcel.py");
-                        File scriptFile =  Paths.get(resource.toURI()).toFile();
-                        String scriptAddr = scriptFile.getAbsolutePath();
+                        File scriptFile = null;
+                        String resource = this.getClass().getClassLoader().getResource("scripts/FIJIExcel.py").toExternalForm();
                         
+                        if (resource.startsWith("jar:")) {
+                            try {
+                                InputStream input = this.getClass().getClassLoader().getResourceAsStream("scripts/FIJIExcel.txt");
+                                scriptFile = File.createTempFile("FIJIExcel", ".py");
+                                OutputStream out = new FileOutputStream(scriptFile);
+                                int read;
+                                byte[] bytes = new byte[1024];
+
+                                while ((read = input.read(bytes)) != -1) {
+                                    out.write(bytes, 0, read);
+                                }
+                                scriptFile.deleteOnExit();
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        } else {
+                            String[] res = resource.split("file:/");
+                            scriptFile = new File(res[1]);
+                        }
+
+                        if (file != null && !file.exists()) {
+                            throw new RuntimeException("Error: File " + scriptFile + " not found!");
+                        }
+                        
+                        String scriptAddr = scriptFile.getAbsolutePath().replaceAll("%20", " ");
                         ProcessBuilder pb = new ProcessBuilder(
-                                pythonDir, scriptAddr, absPath, 
+                                pythonDir, scriptAddr, absPath,
                                 name.getText(), file.getParent());
                         Process p = pb.start();
                         /*
@@ -131,13 +160,14 @@ public class PyScriptExec {
 
                         System.out.println("Output: " + in.readLine());
                         System.out.println("Errors: " + er.readLine());
-                        */
+                         */
                         label.setText("Python script successfully run!");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         label.setText("Error loading Python script.");
                     }
                     break;
+                // Locates the user's Python directory
                 case "Python Directory":
                     if (pyChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                         pyFile = pyChooser.getSelectedFile();
@@ -151,5 +181,5 @@ public class PyScriptExec {
             }
         }
     }
-    
+
 }
