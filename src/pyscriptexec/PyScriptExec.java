@@ -92,12 +92,13 @@ public class PyScriptExec {
     
     public static class FileMenuAction implements ActionListener {
         
-        static String absPath, pythonDir;
+        static String absPath;
+        static String pythonDir /*= "Your/python/dir/python.exe"*/;
         
         @Override
         public void actionPerformed(ActionEvent e) {
             FileNameExtensionFilter filter = new FileNameExtensionFilter(".tsv, .txt", "tsv", "txt");
-            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe", "exe");
+            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe, .app", "exe", "app");
             chooser.setAcceptAllFileFilterUsed(false);
             chooser.setFileFilter(filter);
             pyChooser.setAcceptAllFileFilterUsed(false);
