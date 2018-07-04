@@ -9,12 +9,6 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
