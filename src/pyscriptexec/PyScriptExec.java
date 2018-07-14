@@ -146,7 +146,7 @@ public class PyScriptExec {
                         String scriptAddr = scriptFile.getAbsolutePath().replaceAll("%20", " ");
                         ProcessBuilder pb = new ProcessBuilder(
                                 pythonDir, scriptAddr, absPath,
-                                name.getText(), file.getParent());
+                                name.getText(), file.getParent(), "false");
                         Process p = pb.start();
                         /* Error and Input streams used to debug
                         BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -154,7 +154,7 @@ public class PyScriptExec {
 
                         System.out.println("Output: " + in.readLine());
                         System.out.println("Errors: " + er.readLine());
-                         */
+                        */
                         label.setText("Python script successfully run!");
                     } catch (Exception ex) {
                         ex.printStackTrace();
