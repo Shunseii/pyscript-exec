@@ -94,8 +94,9 @@ public class PyScriptExec {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            // Create File Extension filters for file chooser
             FileNameExtensionFilter filter = new FileNameExtensionFilter(".tsv, .txt", "tsv", "txt");
-            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe, .app", "exe", "app");
+            FileNameExtensionFilter pyFilter = new FileNameExtensionFilter(".exe, .app", "exe", "app"); 
             chooser.setAcceptAllFileFilterUsed(false);
             chooser.setFileFilter(filter);
             pyChooser.setAcceptAllFileFilterUsed(false);
@@ -177,5 +178,4 @@ public class PyScriptExec {
             }
         }
     }
-
 }
