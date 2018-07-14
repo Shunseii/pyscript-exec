@@ -1,0 +1,9 @@
+Dummy
+Foldername 1
+Img1	1.4	5.6
+Dummy
+Foldername 2
+Img4	1.2	3.4
+Img5	5.6	7.8
+Img2	1.5	6.7
+Img3	1.6	1.8
