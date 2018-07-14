@@ -107,7 +107,7 @@ public class PyScriptExec {
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                         file = chooser.getSelectedFile();
                         absPath = file.getAbsolutePath();
-                        label.setText("Please choose a name to save the file as.");
+                        label.setText("File loaded. Please save the file.");
                         saveButton.setEnabled(true);
                         name.setEnabled(true);
                     }
@@ -165,8 +165,11 @@ public class PyScriptExec {
                     if (pyChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                         pyFile = pyChooser.getSelectedFile();
                         pythonDir = pyFile.getAbsolutePath();
-                        label.setText("Please load a file from the File menu.");
                         fileMenuItems[1].setEnabled(true);
+                        
+                        if (!label.getText().contains("File loaded.")) {
+                            label.setText("Please load a file from the File menu.");
+                        }
                     }
                     break;
                 default:
