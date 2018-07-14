@@ -84,14 +84,13 @@ public class PyScriptExec {
 
             fileMenuItems[i].addActionListener(new FileMenuAction());
         }
-
         frame.setJMenuBar(menuBar);
     }
 
     public static class FileMenuAction implements ActionListener {
 
         static String absPath;
-        static String pythonDir /*= "path/to/python.exe or python.app"*/;
+        static String pythonDir;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -148,7 +147,7 @@ public class PyScriptExec {
                                 pythonDir, scriptAddr, absPath,
                                 name.getText(), file.getParent());
                         Process p = pb.start();
-                        /*
+                        /* Error and Input streams used to debug
                         BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
                         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
